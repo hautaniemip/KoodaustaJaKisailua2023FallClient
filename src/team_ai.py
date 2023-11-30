@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from apiwrapper.websocket_wrapper import ClientContext
-from apiwrapper.models import GameState, Command
-
+from apiwrapper.models import GameState, Command, ActionType, MoveActionData, CellType
 
 ai_logger = getLogger("team_ai")
 """You can use this logger to track the behaviour of your bot. 
@@ -43,6 +42,14 @@ def process_tick(context: ClientContext, game_state: GameState) -> Command | Non
         If your function takes longer than the max tick length the function is cancelled and None is returned.
     """
     ai_logger.info("processing tick")
-
     # please add your code here
-    return None
+
+    own_position = None
+
+    for row in game_state.game_map:
+        for cell in row:
+            if cell.cell_type == CellType.Ship and 'hautaniemip' in cell.data.id:
+                own_position = cell.data.position
+            elif cell.cell_type == CellType.HitBox:
+                ai_logger.info(cell.data)
+    return Command(ActionType.Move, MoveActionData(3))
