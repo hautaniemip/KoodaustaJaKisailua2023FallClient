@@ -1,11 +1,23 @@
 from __future__ import annotations
 
+import random
+from enum import Enum
 from logging import getLogger
 from typing import TYPE_CHECKING
 
+from src.helpers import get_coordinate_difference, get_approximate_direction
+
 if TYPE_CHECKING:
     from apiwrapper.websocket_wrapper import ClientContext
-from apiwrapper.models import GameState, Command, ActionType, MoveActionData, CellType
+from apiwrapper.models import GameState, Command, ActionType, MoveActionData, CellType, CompassDirection, \
+    ShootActionData, TurnActionData, Coordinates
+
+
+class State(Enum):
+    Shoot = 0
+    Turn = 1
+    Move = 2
+
 
 ai_logger = getLogger("team_ai")
 """You can use this logger to track the behaviour of your bot. 
@@ -44,12 +56,15 @@ def process_tick(context: ClientContext, game_state: GameState) -> Command | Non
     ai_logger.info("processing tick")
     # please add your code here
 
-    own_position = None
+    action = random.choice(list(State))
 
-    for row in game_state.game_map:
-        for cell in row:
-            if cell.cell_type == CellType.Ship and 'hautaniemip' in cell.data.id:
-                own_position = cell.data.position
-            elif cell.cell_type == CellType.HitBox:
-                ai_logger.info(cell.data)
-    return Command(ActionType.Move, MoveActionData(3))
+    if action == State.Move:
+        return Command(ActionType.Move, MoveActionData(random.randint(1, 3)))
+
+    if action == State.Turn:
+        return Command(ActionType.Turn, TurnActionData(random.choice(list(CompassDirection))))
+
+    if action == State.Shoot:
+        return Command(ActionType.Shoot, ShootActionData(random.randint(1, 4), random.randint(1, 4)))
+
+    return Command(ActionType.Turn, TurnActionData(CompassDirection.East))

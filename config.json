@@ -1,6 +1,6 @@
 {
   "websocket_url": "wss://captsolar.mustachecorp.com:8081/api/socket",
-  "token": "test",
+  "token": "hautaniemip1",
   "bot_name": "main",
   "wrapper_log_file": "wrapper.log",
   "wrapper_log_stream": "stdout",
